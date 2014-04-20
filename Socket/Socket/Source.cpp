@@ -26,6 +26,7 @@
 
 #define GAME_WIN 20
 #define GAME_LOSE 21
+#define GAME_END 22
 
 using namespace std;
 
@@ -54,6 +55,10 @@ void main()
 			printf("Khong the khoi tao thu vien!\n");
 			exit(-1);
 		}
+
+
+		Label_Continue_play:  //Quay trở lại trò chơi
+
 
 		SOCKET sockServer = socket(AF_INET, SOCK_STREAM, 0);
 		sockaddr_in serverAdd;
@@ -183,6 +188,13 @@ void main()
 			else
 			if (Play[pos] == true) //Neu Nguoi choi i van con duoc phep choi
 			{
+				printf("Luot choi thu %d, nguoi choi thu %d \n", turn, pos);
+				for (int i = 0; i < 3; i++)
+				{
+					send(sockClient[i], (char*)&pos, sizeof(int), 0);
+				}
+
+
 				recv(sockClient[pos], GueassCharacter, sizeof(char), 0);  //Nhận chữ cái đoán
 
 				//Kiem tra cum tu doan
@@ -195,24 +207,73 @@ void main()
 						if (strcmp(DapAn[q].c_str(), GueassWords) == 0)		//Kiểm tra đúng cụm từ đoán
 						{
 							int code = GAME_WIN;
-							send(sockClient[pos], (char*)&code, sizeof(int), 0);
+							for (int i = 0; i < 3; i++)
+							{
+								send(sockClient[pos], (char*)&code, sizeof(int), 0);	//Gửi mã code thắng tới all
+							}
 							Score[pos] += 5;
 							break;
 						}
 						else
 						{
 							int code = GAME_LOSE;
-							send(sockClient[pos], (char*)&code, sizeof(int), 0);
-							Play[pos] == false;
+							for (int i = 0; i < 3; i++)
+							{
+								send(sockClient[pos], (char*)&code, sizeof(int), 0); //Gửi mã code thua tới all
+							}
+							Play[pos] == false;			//Loại bỏ người chơi ra khỏi danh sách chơi
+							pos++;		//Chuyển sang người chơi mới
+							continue;		//Quay lại vòng lặp với người chơi mới
 						}
 					}
 				}
 
+				int count = 0; //Biến đếm số lượng chữ cái đúng
+				int _p[30]; //Mảng lưu vị trí chữ cái đúng
+				for (int i = 0; i < Len_Question; i++)
+				{
+					if (DapAn[q][i] == *GueassCharacter)
+					{
+						count++;
+						_p[count - 1] = i;
+					}
+				}
 
+				for (int i = 0; i < 3; i++)				//Gửi all số chữ đoán đúng
+				{
+					send(sockClient[i], (char*)&count, sizeof(int), 0);			//Gửi số lượng
+					for (int j = 0; j < count; j++)				//gửi tới từng client vị trí của chữ cái đó
+					{
+						send(sockClient[i], (char*)&_p[j], sizeof(int), 0);
+					}
+				}
 
+				//Cộng điểm
+				if (count != 0)
+				{
+					Score[pos] += 1;		//Đoán đúng ko tăng số thứ tự chơi
+				}
+				else if (count == 0)
+				{
+					pos++;			//Đoán sai, chuyển quyền cho người chơi kế
+				}
 
-			}
-			
+			}			
+		}			//Thoát khỏi vòng while sau 5 turn hoặc gặp câu lệnh break ở đoán đúng cụm từ
+
+		int code = GAME_END;
+		for (int i = 0; i < 3; i++)
+		{
+			send(sockClient[i], (char*)&code, sizeof(int), 0);   //Gửi code game end all
+			send(sockClient[i], (char*)&Score[i], sizeof(int), 0);  // Gửi điểm tổng tới all
+		}
+
+		int check;
+		printf("Tiep tuc tao tro choi? (1-yes, #-no");
+		scanf("%d", &check);
+		if (check == 1)
+		{
+			goto Label_Continue_play;
 		}
 	}
 }
