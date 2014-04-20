@@ -8,5 +8,6 @@ public:
 	~CGUI(void);
 
 	std::string AskUser(std::string);
+	void ShowMsg(std::string);
 };
 

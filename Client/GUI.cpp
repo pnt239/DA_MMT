@@ -19,3 +19,8 @@ string CGUI::AskUser(string question)
 	cin>>res;
 	return res;
 }
+
+void CGUI::ShowMsg(string message)
+{
+	cout<<"\t-> "<<message<<endl;
+}

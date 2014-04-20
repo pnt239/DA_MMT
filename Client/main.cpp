@@ -4,7 +4,10 @@ int main()
 {
 	CApp* app = new CApp();
 
-	app->Run();
+	if (app->Connect())
+	{
+		app->Run();
+	}
 
 	delete app;
 }
