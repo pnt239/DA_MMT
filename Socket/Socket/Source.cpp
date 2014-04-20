@@ -66,11 +66,15 @@ void main()
 		SOCKET sockClient[3];
 
 		string Nickname[3];
+
+		//Accept Client
 		for (int i = 0; i<3; i++)
 		{
 			sockClient[i] = accept(sockServer, NULL, NULL);
 			printf("Da tiep nhan client %d/%d\n", i + 1, 3);
 		}
+
+		//Nhận Nickname
 		for (int i = 0; i < 3; i++)
 		{
 			int len;
@@ -105,7 +109,11 @@ void main()
 			}
 		}
 
-		int Score[3];
+
+		//Bắt đầu chơi
+
+		int Score[3];    //Mảng int lưu điểm
+
 		for (int i = 0; i < 3; i++)
 		{
 			Score[i] = 0;
@@ -113,7 +121,7 @@ void main()
 			send(sockClient[i], (char*)&Score[i], sizeof(int), 0);
 		}
 
-
+		//Đọc DB
 		ifstream ReadDB;
 		ReadDB.open("database.txt", ios::in);
 		int Qnum;
@@ -126,6 +134,7 @@ void main()
 			ReadDB >> GoiY[i];
 		}
 
+		//Lấy câu hỏi
 		srand(time(NULL));
 		int q = rand() % (Qnum);
 
@@ -139,6 +148,8 @@ void main()
 		char* GY;
 		strcpy(GY, GoiY[q].c_str());
 
+
+		//Gửi độ dài đáp án và gợi ý tới người chơi
 		for (int i = 0; i < 3; i++)
 		{
 			printf("Gui cau hoi va goi y toi client thu: %d \n", i);
@@ -148,31 +159,40 @@ void main()
 			send(sockClient[i], GY, Len_GoiY, 0);
 		}
 
-		int turn = 1;
-		char*  GueassCharacter;
-		char* GueassWords;
-		int Len_gueasswords;
-		bool Play[3];
+		//Băt đầu chơi
+
+		int turn = 1;	//Lượt ban đầu là 1
+		char*  GueassCharacter;		//Chứa chữ cái đoán
+		char* GueassWords;			//Chứa cụm từ đoán
+		int Len_gueasswords;		//Chiều dài cụm từ đoán
+		bool Play[3];				//Lưu khả thi chơi của từng người
 		for (int i = 0; i < 3; i++)
 		{
 			Play[i] == true;
 		}
-		int pos = 0;
+
+		int pos = 0;			//Lượt chơi ban đầu cho người thứ 0
 		while (turn <= 5)
 		{
-			
+			if (pos >= 3)		//Đã quá số người chơi thì quay trở lại người chơi đầu tiên và turn tăng 1
+			{
+				pos = 0;
+				turn++;
+				continue;
+			}
+			else
 			if (Play[pos] == true) //Neu Nguoi choi i van con duoc phep choi
 			{
-				recv(sockClient[pos], GueassCharacter, sizeof(char), 0);
+				recv(sockClient[pos], GueassCharacter, sizeof(char), 0);  //Nhận chữ cái đoán
 
 				//Kiem tra cum tu doan
-				recv(sockClient[pos], (char*)&Len_gueasswords, sizeof(int), 0);
-				if (Len_gueasswords != 0)
+				recv(sockClient[pos], (char*)&Len_gueasswords, sizeof(int), 0);   //Nhận len cụm từ đoán
+				if (Len_gueasswords != 0)  //Nếu len !=0 thì nhận cụm từ đoán
 				{
-					recv(sockClient[pos], GueassWords, Len_gueasswords, 0);
-					if (turn > 2)
+					recv(sockClient[pos], GueassWords, Len_gueasswords, 0);		//Nhận cùm từ đoán
+					if (turn > 2)		//Nếu quá 2 turn thì mới bắt đầu kiểm tra
 					{
-						if (strcmp(DapAn[q].c_str(), GueassWords) == 0)
+						if (strcmp(DapAn[q].c_str(), GueassWords) == 0)		//Kiểm tra đúng cụm từ đoán
 						{
 							int code = GAME_WIN;
 							send(sockClient[pos], (char*)&code, sizeof(int), 0);
