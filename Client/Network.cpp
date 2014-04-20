@@ -1,5 +1,5 @@
 #include "Network.h"
-
+using namespace std;
 
 CNetwork::CNetwork(void)
 {
@@ -34,7 +34,7 @@ bool CNetwork::Connect(const char* ip, int port)
 		return false;
 
 	// Create Socket
-	SOCKET m_sockClient = socket(AF_INET, SOCK_STREAM, 0);
+	m_sockClient = socket(AF_INET, SOCK_STREAM, 0);
 
 	if (m_sockClient == INVALID_SOCKET) {
 		m_error = NetworkError::NotInitSocket;
@@ -56,4 +56,67 @@ bool CNetwork::Connect(const char* ip, int port)
 	}
 
 	return true;
+}
+
+int CNetwork::ReadInt()
+{
+	int ret = 0;
+
+	if (m_sockClient == INVALID_SOCKET)
+		return 0;
+
+	recv(m_sockClient, (char*)&ret, sizeof(int), 0);
+	return ret;
+}
+
+string CNetwork::ReadString()
+{
+	if (m_sockClient == INVALID_SOCKET)
+		return string("");
+
+	char len;
+	recv(m_sockClient, (char*)&len, sizeof(char), 0);
+	char* s = new char[(int)len];
+	recv(m_sockClient, s, len, 0);
+
+	string ret(s);
+	delete s;
+	return ret;
+}
+
+PlayerInfo CNetwork::ReadPlayer()
+{
+	PlayerInfo player;
+	*this>>player.No;
+	*this>>player.NickName;
+	*this>>player.Score;
+	return player;
+}
+
+void CNetwork::operator<<(int number)
+{
+	if (m_sockClient == INVALID_SOCKET)
+		return;
+
+	send(m_sockClient, (char*)&number, sizeof(int), 0);
+}
+
+void CNetwork::operator<<(string s)
+{
+	if (m_sockClient == INVALID_SOCKET)
+		return;
+
+	char len = (char)(s.length() + 1);
+	send(m_sockClient, (char*)&len, sizeof(len), 0);
+	send(m_sockClient, s.c_str(), len, 0);
+}
+
+void CNetwork::operator>>(int& number)
+{
+	number = ReadInt();
+}
+
+void CNetwork::operator>>(std::string& s)
+{
+	s = ReadString();
 }

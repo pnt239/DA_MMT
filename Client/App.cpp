@@ -25,13 +25,23 @@ void CApp::Run()
 {
 	/* Registration */
 	// Enter checked nickname
-	string nickname = m_gui->AskUser("Nhap nickname can dang ky: ");
-	// Send nickname
+	do
+	{
+		string nickname = m_gui->AskUser("Nhap nickname can dang ky: ");
+		*m_network<<nickname;
+	} while (m_network->ReadInt() == REG_DUP);
 
-	send(m_sockClient, nickname.c_str(), nickname.length() + 1, 0);
-}
+	// Get number ordinal
+	*m_network>>m_no;
 
-bool CApp::Is_Ok()
-{
-	return m_error;
+	// Get Players List
+	int nclient = m_network->ReadInt();
+	for (int i = 0; i < nclient; i++)
+		m_gui->AddPlayer(m_network->ReadPlayer());
+
+	while (true)
+	{
+		system("cls");
+		m_gui->ShowGame();
+	}
 }

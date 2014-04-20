@@ -21,21 +21,18 @@ public:
 	CNetwork(void);
 	~CNetwork(void);
 
-	bool Connect(const char* ip, int port);
+	bool Listen(int port);
+	SOCKET Accept();
 
-	int ReadInt();
-	std::string ReadString();
-	PlayerInfo ReadPlayer();
+	void Send(SOCKET, int);
+	void Send(SOCKET, std::string);
+	void Send(SOCKET, ClientInfo);
 
-	void operator<<(int);
-	void operator<<(std::string);
-
-	void operator>>(int&);
-	void operator>>(std::string&);
+	std::string ReadString(SOCKET);
 private:
 	WORD m_wVersionRequested;
 	WSADATA m_wsaData;
-	SOCKET m_sockClient;
+	SOCKET m_sockServer;
 
 	NetworkError m_error;
 };
