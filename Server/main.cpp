@@ -100,7 +100,7 @@ bool ReadDatabase(string filename, vector<string>& answ, vector<string>& hints)
 	ifstream Database(filename, ios::in);
 	if (!Database.is_open())
 	{
-		cout<<"Khong the moi file du lieu ^^"<<endl;
+		cout<<"Khong the mo file du lieu ^^"<<endl;
 		return false;
 	}
 
@@ -188,7 +188,7 @@ void main()
 				continue;
 			}
 			else
-			if (Clients[pos].Enable == true) // Neu nguoi choi i van con duoc phep choi
+			if (Clients[pos].Enable == true) // Neu nguoi choi pos van con duoc phep choi
 			{
 				cout<<"Luot choi thu " << turn << ", nguoi choi thu " << pos << " \n";
 				for (int i = 0; i < iConnection; i++)
@@ -197,7 +197,7 @@ void main()
 				}
 
 				GuessCharacter = network->ReadString(Clients[pos].Socket); // Nhan chu cai doan
-				GuessString = network->ReadString(Clients[pos].Socket);  // Nhan cum thu doan
+				GuessString = network->ReadString(Clients[pos].Socket);  // Nhan cum tu doan
 
 				if (GuessString.length() != 0)  // Neu len !=0 thi nhan cum tu doan
 				{
@@ -210,7 +210,7 @@ void main()
 							{
 								network->Send(Clients[i].Socket, code); // Gui ma code thang toi all
 							}
-
+							cout << "Nguoi choi thu " << pos << " da doan dung cum tu khoa la : " << Answer << endl;
 							Clients[pos].Score += 5;
 							break;
 						}
@@ -221,6 +221,7 @@ void main()
 							{
 								network->Send(Clients[i].Socket, code); // Gui ma code thang toi all
 							}
+							cout << "Nguoi choi thu " << pos << " da doan sai cum tu khoa va bi loai khoi tro choi: " << GuessString << endl;
 							Clients[pos].Enable = false; // Loai bo nguoi choi ra khoi danh sach choi
 							pos++; // Chuyen sang nguoi choi moi
 							continue; // Quay lai vong lap voi nguoi choi moi
@@ -246,9 +247,12 @@ void main()
 				if (count != 0)
 				{
 					Clients[pos].Score += 1;
+					cout << "Nguoi choi thu " << pos << " da doan dung chu cai " << GuessCharacter << endl;
+					cout << "Co " << count << " chu cai trong cum tu can tim";
 				}
 				else if (count == 0)
 				{
+					cout << "Khong co chu cai " << GuessCharacter << " trong cum tu can tim" << endl;
 					pos++;	// Doan sai, chuyen quyen cho nguoi choi ke
 				}
 
@@ -256,8 +260,10 @@ void main()
 		} //Thoat khoi vong while sau 5 turn hoac gap cau lenh break o doan dung cum tu
 
 		int code = GAME_END;
+		cout << "Tro choi ket thuc, diem tong ket chung cuoc" << endl;
 		for (int i = 0; i < 3; i++)
 		{
+			cout << "Diem nguoi choi thu" << i << " Nickname: " << Clients[i].NickName << "la: " << Clients[i].Score << endl;
 			network->Send(Clients[i].Socket, code);
 			network->Send(Clients[i].Socket, Clients[i].Score);
 		}
