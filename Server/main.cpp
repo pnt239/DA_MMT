@@ -57,7 +57,7 @@ void ConnectClients(CNetwork* network, ClientInfo clients[], int nClient)
 		// Nhan nickname
 		string nick = network->ReadString(clients[i].Socket );
 
-		int code;
+		int code = REG_SUCC;
 
 		// Kiem tra co trung nickname khong
 		for (int j = i; j < nClient; j++)
@@ -67,13 +67,13 @@ void ConnectClients(CNetwork* network, ClientInfo clients[], int nClient)
 				break;
 			}
 		
+		// Thong bao cho client
+		network->Send(clients[i].Socket, code);
+
 		if (code == REG_DUP)
 		{
 			// Neu trung
 			cout<<"Client thu "<< i <<" dang ki da dang ki trung nickname";
-
-			// Thong bao cho client da trung
-			network->Send(clients[i].Socket, code);
 		}
 		else
 		{
@@ -83,10 +83,6 @@ void ConnectClients(CNetwork* network, ClientInfo clients[], int nClient)
 			clients[i].Enable = true;
 
 			cout<<"Client thu " << i << " dang ki da dang ki thanh cong voi nickname: " << clients[i].NickName;
-
-			// Thong bao cho client da thanh cong
-			code = REG_SUCC;
-			network->Send(clients[i].Socket, code);
 
 			// Gui so thu tu cua nguoi dang ky
 			network->Send(clients[i].Socket, i);
@@ -108,13 +104,14 @@ bool ReadDatabase(string filename, vector<string>& answ, vector<string>& hints)
 	for (int i = 0; i < nQues/2; i++)
 	{
 		string ans, hint;
+		Database.ignore();
 		getline(Database, ans);
 		getline(Database, hint);
 		
 		answ.push_back(ans);
 		hints.push_back(hint);
 	}
-
+	Database.close();
 	return true;
 }
 

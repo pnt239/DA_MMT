@@ -41,7 +41,17 @@ void CApp::Run()
 
 	while (true)
 	{
-		system("cls");
-		m_gui->ShowGame();
+		while (true)
+		{
+			int lenAns = m_network->ReadInt();
+			string hint = m_network->ReadString();
+
+			system("cls");
+			m_gui->SetQuestion(hint);
+			m_gui->SetAnswer(lenAns);
+			m_gui->ShowGame();
+
+
+		}
 	}
 }

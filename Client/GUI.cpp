@@ -7,7 +7,7 @@ using namespace std;
 CGUI::CGUI(void)
 {
 	m_question = "Rua nao co bon muoi chan? pham ngoc thanh pham ngocj thanh pham ngoc thanh pham ngoc thanh";
-	m_alert = "test alert";
+	m_alert = "Cung giai ma o chu chung t ngay hom nay!";
 	m_lenAnswer = 14;
 	m_answer = CreateLogo();
 	m_isVisible = true; //default is true
@@ -123,7 +123,6 @@ void CGUI::ShowGame()
 	int ansRow;
 	m_mode = 2;
 	m_isVisible = false;
-	m_question = "Rua nao co bon muoi chan? pham ngoc thanh pham ngocj thanh pham ngoc thanh pham ngoc thanh";
 
 	ShowCell();
 	
