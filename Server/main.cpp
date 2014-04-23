@@ -193,6 +193,8 @@ void main()
 					network->Send(Clients[i].Socket, pos);
 				}
 
+				network->Send(Clients[pos].Socket, turn); // Gui luot choi cua nguoi choi
+
 				GuessCharacter = network->ReadString(Clients[pos].Socket); // Nhan chu cai doan
 				GuessString = network->ReadString(Clients[pos].Socket);  // Nhan cum tu doan
 
@@ -230,11 +232,12 @@ void main()
 				int _p[30];		// Mang luu vi tri chu cai dung
 
 				for (int i = 0; i < Answer.length(); i++)
-					if (Answer[i] == GuessCharacter[0])
+					if (tolower(Answer[i]) == tolower(GuessCharacter[0]))
 						_p[count++] = i;
 
 				for (int i = 0; i < iConnection; i++)			// Gui all so chu doan dung
 				{
+					network->Send(Clients[i].Socket, (int)Answer[_p[0]]);	// Gui so luong
 					network->Send(Clients[i].Socket, count);	// Gui so luong
 					for (int j = 0; j < count; j++)				//gui toi tung client vi tri cua chu cai do
 						network->Send(Clients[i].Socket, _p[j]);

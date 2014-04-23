@@ -7,10 +7,7 @@ using namespace std;
 CGUI::CGUI(void)
 {
 	m_question = "Rua nao co bon muoi chan? pham ngoc thanh pham ngocj thanh pham ngoc thanh pham ngoc thanh";
-	m_alert = "Cung giai ma o chu chung t ngay hom nay!";
-	m_lenAnswer = 14;
 	m_answer = CreateLogo();
-	m_isVisible = true; //default is true
 	m_mode = 1;
 }
 
@@ -19,134 +16,37 @@ CGUI::~CGUI(void)
 {
 }
 
-
-void CGUI::ShowCell()
+string CGUI::ShowAsk(string ques)
 {
-	// Calculate First Position
-	int padding = 2;
-	m_curCol = (CONSOLE_COLUMN - m_lenAnswer - padding*2)/2;
-	m_curRow = 1;
-
-	// Show line
-	GoToXY(m_curCol, m_curRow++);
-	for (int i = 0; i < m_lenAnswer + padding*2; i++)
-		cout<<(char)176;
-
-	// Show space
-	GoToXY(m_curCol, m_curRow++);
-	cout<<(char)176;
-	for (int i = 0; i < m_lenAnswer + padding; i++)
-		cout<<' ';
-	cout<<(char)176;
-
-	// Show text
-	GoToXY(m_curCol, m_curRow++);
-	cout<<(char)176;
-	cout<<' ';
-	for (int i = 0; i < m_lenAnswer; i++)
-		if (m_isVisible)
-			cout<<m_answer[i];
-		else
-			cout<<(char)177;
-
-	cout<<' ';
-	cout<<(char)176;
-
-	// Show space
-	GoToXY(m_curCol, m_curRow++);
-	cout<<(char)176;
-	for (int i = 0; i < m_lenAnswer + padding; i++)
-		cout<<' ';
-	cout<<(char)176;
-
-	// Show line
-	GoToXY(m_curCol, m_curRow++);
-	for (int i = 0; i < m_lenAnswer + padding*2; i++)
-		cout<<(char)176;
-	
-	// Show cell table info
-	m_curRow++;
-	m_curCol = (CONSOLE_COLUMN - QUESTION_WIDTH) / 2;
-	GoToXY(m_curCol, m_curRow++);
-	if (!m_isVisible)
-	{
-		cout<<"O chu co "<<m_lenAnswer<<" chu cai.";
-	}
-
-	// Show quetion with wrapper
-	GoToXY(m_curCol, m_curRow++);
-	int lengthQues = 0;
-
-	if (m_mode == 2)
-	{
-		cout<<"Cau hoi: ";
-		lengthQues = 9; // 9 is length of "Cau hoi: "
-	}
-
-	printWrappedText(m_question, lengthQues);
-
-	if (m_mode != 1)
-	{
-		// Not in ask mode
-		m_curRow++;
-		GoToXY(m_curCol, m_curRow++);
-		cout<<"MC: ";
-		printWrappedText(m_alert, 4);
-
-		m_curRow++;
-		GoToXY(m_curCol, m_curRow++);
-	}
+	ShowCell(true);
+	ShowAlert(m_alert, 1);
+	return AskUser(ques, m_curRow);
 }
 
-string CGUI::AskUser(string question)
+void CGUI::ShowInfo(string info)
 {
-	m_mode = 1;
-	m_question = question;
-
-	ShowCell();
-
-	string res;
-	cin>>res;
-	return res;
+	ShowCell(true);
+	ShowAlert(info, 0);
 }
 
-void CGUI::ShowMsg(string message)
+void CGUI::ShowGame(int no, int turn)
 {
-	GoToXY(m_curCol, m_curRow++);
-	cout<<"\t-> "<<message<<endl;
-}
-
-void CGUI::ShowGame()
-{
-	string c;
-	string s;
 	int ansRow;
-	m_mode = 2;
-	m_isVisible = false;
 
-	ShowCell();
-	
+	ShowCell(false);
+	ShowOrder(no, turn);
+	ShowQuestion(m_question);
+	ShowAlert(m_alert, 0);
+
 	ansRow = m_curRow;
-
 	m_curRow += 3;
-	GoToXY(m_curCol, m_curRow++);
-	cout<<"---------- Player List ----------";
-	for (int i=0; i<players.size(); i++)
-	{
-		GoToXY(m_curCol, m_curRow++);
-		cout<<" "<<players[i].No<<". "<<players[i].NickName<<"\t"<<players[i].Score;
-	}
 
-	if (m_mode == 2) // is playing
-	{
-		GoToXY(m_curCol, ansRow);
-		cout<<"Ban doan chu: ";
-		cin>>c;
+	ShowPlayers();
 
-		GoToXY(m_curCol, ansRow+1);
-		cout<<"Cum tu doan luon: ";
-		cin>>s;
-	}
+	m_guesschar = AskUser("Ban doan chu: ", ansRow++);
+	if (turn > 2)
+		m_guessstr = AskUser("Cum tu doan luon: ", ansRow++);
+
 }
 
 void CGUI::AddPlayer(PlayerInfo player)
@@ -169,37 +69,162 @@ void CGUI::SetAlert(string alert)
 	m_alert = alert;
 }
 
-void CGUI::SetAnswer(int length)
+void CGUI::SetAnswer(string s)
 {
-	if (m_answer != NULL)
-		delete m_answer;
-
-	m_lenAnswer = length;
-	m_answer = new char[m_lenAnswer];
-	for (int i=0; i<m_lenAnswer; i++)
-		m_answer[i] = ' ';
+	m_answer = s;
 }
 
-char* CGUI::CreateLogo()
+void CGUI::SetAnswer(int pos, char c)
 {
-	char* ret = new char[14];
+	m_answer[pos] = c;
+}
 
-	ret[0] = 'C';
-	ret[1] = 'H';
-	ret[2] = 'I';
-	ret[3] = 'E';
-	ret[4] = 'C';
-	ret[5] = 'N';
-	ret[6] = 'O';
-	ret[7] = 'N';
-	ret[8] = 'K';
-	ret[9] = 'Y';
-	ret[10] = 'D';
-	ret[11] = 'I';
-	ret[12] = 'E';
-	ret[13] = 'U';
+string CGUI::GetGuessChar()
+{
+	return m_guesschar;
+}
 
-	return ret;
+string CGUI::GetGuessString()
+{
+	return m_guessstr;
+}
+
+string CGUI::AskUser(string question, int line)
+{
+	GoToXY(m_curCol, line);
+
+	cout<<question;
+
+	string res;
+	cin>>res;
+	return res;
+}
+
+void CGUI::ShowCell(bool showcell)
+{
+	system("cls");
+	// Calculate First Position
+	int padding = 2;
+	int lenAnswer = m_answer.length();
+
+	m_curCol = (CONSOLE_COLUMN - lenAnswer - padding*2)/2;
+	m_curRow = 1;
+
+	// Show line
+	GoToXY(m_curCol, m_curRow++);
+	for (int i = 0; i < lenAnswer + padding*2; i++)
+		cout<<(char)176;
+
+	// Show space
+	GoToXY(m_curCol, m_curRow++);
+	cout<<(char)176;
+	for (int i = 0; i < lenAnswer + padding; i++)
+		cout<<' ';
+	cout<<(char)176;
+
+	// Show text
+	GoToXY(m_curCol, m_curRow++);
+	
+	cout<<(char)176;
+	cout<<' ';
+	for (int i = 0; i < lenAnswer; i++)
+		if (m_answer[i] == ' ')
+			cout<<(char)177;
+		else 
+			cout<<m_answer[i];
+
+	cout<<' ';
+	cout<<(char)176;
+
+	// Show space
+	GoToXY(m_curCol, m_curRow++);
+	cout<<(char)176;
+	for (int i = 0; i < lenAnswer + padding; i++)
+		cout<<' ';
+	cout<<(char)176;
+
+	// Show line
+	GoToXY(m_curCol, m_curRow++);
+	for (int i = 0; i < lenAnswer + padding*2; i++)
+		cout<<(char)176;
+	
+	// endline
+	m_curRow++;
+
+	// Show cell table info
+	if (!showcell)
+	{
+		GoToXY(m_curCol, m_curRow++);
+		cout<<"O chu co "<<lenAnswer<<" chu cai.";
+	}
+
+	// Set indent again
+	m_curCol = (CONSOLE_COLUMN - QUESTION_WIDTH) / 2;
+	m_curRow++;
+}
+
+void CGUI::ShowOrder(int no, int turn)
+{
+	GoToXY(m_curCol, m_curRow++);
+	cout<<"Ban o vi tri thu "<<no<<" - Luot: "<<turn<<endl;
+
+	m_curRow++;
+}
+
+void CGUI::ShowQuestion(string question, string title)
+{
+	if (question.length() == 0)
+		return;
+
+	// Show quetion with wrapper
+	GoToXY(m_curCol, m_curRow++);
+
+	cout<<title;
+
+	printWrappedText(m_question, title.length());
+
+	m_curRow++;
+}
+
+void CGUI::ShowAlert(string alert, int alertmode)
+{
+	if (alert.length() == 0)
+		return;
+
+	m_curRow++;
+	GoToXY(m_curCol, m_curRow++);
+
+	string title;
+	switch (alertmode)
+	{
+	case 0:
+		title = "MC: ";
+		break;
+	case 1:
+		title = "Loi: ";
+		break;
+	}
+
+	cout<<title;
+	printWrappedText(alert, title.length());
+
+	m_curRow++;
+}
+
+void CGUI::ShowPlayers()
+{
+	GoToXY(m_curCol, m_curRow++);
+	cout<<"---------- Player List ----------";
+	for (int i=0; i<players.size(); i++)
+	{
+		GoToXY(m_curCol, m_curRow++);
+		cout<<" "<<players[i].No<<". "<<players[i].NickName<<"\t"<<players[i].Score;
+	}
+}
+
+string CGUI::CreateLogo()
+{
+	return "CHIECNONKYDIEU";
 }
 
 void CGUI::printWrappedText(string text, int indent)
