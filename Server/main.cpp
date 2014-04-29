@@ -256,7 +256,10 @@ void main()
 					pos++;	// Doan sai, chuyen quyen cho nguoi choi ke
 				}
 
-			}			
+			}
+			else {
+				pos++;
+			}
 		} //Thoat khoi vong while sau 5 turn hoac gap cau lenh break o doan dung cum tu
 
 		int code = GAME_END;
