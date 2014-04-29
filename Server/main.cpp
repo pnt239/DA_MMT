@@ -237,7 +237,6 @@ void main()
 
 				for (int i = 0; i < iConnection; i++)			// Gui all so chu doan dung
 				{
-					network->Send(Clients[i].Socket, (int)Answer[_p[0]]);	// Gui so luong
 					network->Send(Clients[i].Socket, count);	// Gui so luong
 					for (int j = 0; j < count; j++)				//gui toi tung client vi tri cua chu cai do
 						network->Send(Clients[i].Socket, _p[j]);
