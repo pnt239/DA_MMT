@@ -15,9 +15,11 @@ public:
 
 	std::string ShowAsk(std::string);
 	void ShowInfo(std::string);
-	void ShowGame(int, int);
+	void ShowGame(int, int, bool view = false);
+	void Pause();
 
 	void AddPlayer(PlayerInfo);
+	void UpdatePlayer(int, int);
 	void RemovePlayer(int id);
 
 	void SetQuestion(std::string);

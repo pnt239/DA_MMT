@@ -85,6 +85,9 @@ void CNetwork::Send(SOCKET socket, string s)
 
 void CNetwork::Send(SOCKET socket, ClientInfo clientinfo)
 {
+	if (socket == INVALID_SOCKET)
+		return;
+
 	this->Send(socket, clientinfo.No);
 	this->Send(socket, clientinfo.NickName);
 	this->Send(socket, clientinfo.Score);
@@ -95,9 +98,10 @@ string CNetwork::ReadString(SOCKET socket)
 	if (socket == INVALID_SOCKET)
 		return string("");
 
-	char len;
+	char len = 1;
 	recv(socket, (char*)&len, sizeof(char), 0);
 	char* s = new char[(int)len];
+	s[0] = 0;
 	recv(socket, s, len, 0);
 
 	string ret(s);

@@ -29,7 +29,7 @@ void CGUI::ShowInfo(string info)
 	ShowAlert(info, 0);
 }
 
-void CGUI::ShowGame(int no, int turn)
+void CGUI::ShowGame(int no, int turn, bool view)
 {
 	int ansRow;
 
@@ -43,15 +43,39 @@ void CGUI::ShowGame(int no, int turn)
 
 	ShowPlayers();
 
-	m_guesschar = AskUser("Ban doan chu: ", ansRow++);
-	if (turn > 2)
-		m_guessstr = AskUser("Cum tu doan luon: ", ansRow++);
+	GoToXY(m_curCol, ansRow);
 
+	if (!view)
+	{
+		m_guessstr = m_guesschar = "";
+		if (turn > 2)
+		{
+			string yesno = AskUser("Ban muon doan luon khong? (1-yes | 2-no) ", ansRow++);
+			if (yesno == "1")
+			{
+				m_guessstr = AskUser("Cum tu doan: ", ansRow++);
+				return;
+			}
+		}
+		m_guesschar = AskUser("Ban doan chu: ", ansRow++);
+	}
+
+}
+
+void CGUI::Pause()
+{
+	GoToXY(m_curCol, m_curRow++);
+	system("pause");
 }
 
 void CGUI::AddPlayer(PlayerInfo player)
 {
 	players.push_back(player);
+}
+
+void CGUI::UpdatePlayer(int pos, int score)
+{
+	players[pos].Score = score;
 }
 
 void CGUI::RemovePlayer(int id)
