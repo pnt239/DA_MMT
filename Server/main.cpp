@@ -244,6 +244,7 @@ void main()
 
 				if (GuessCharacter == "" && GuessString == "")
 				{
+					// Kiem tra neu nguoi choi da roi cuoc choi
 					iNotPlay++;
 					Clients[pos].Enable = false;
 					Clients[pos].NickName = "";
