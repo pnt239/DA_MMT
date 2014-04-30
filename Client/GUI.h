@@ -25,6 +25,7 @@ public:
 	void SetAnswer(std::string);
 	void SetAnswer(int, char);
 
+	std::string GetAnswer() { return m_answer; }
 	std::string GetGuessChar();
 	std::string GetGuessString();
 private:

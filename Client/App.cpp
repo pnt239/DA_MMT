@@ -68,6 +68,8 @@ void CApp::Run()
 		while (true)
 		{
 			int whoplay = m_network->ReadInt();
+			// Number of opened cell
+			m_opencount = 0;
 
 			if (whoplay == m_no)
 			{
@@ -84,10 +86,12 @@ void CApp::Run()
 					*m_network>>code;
 					if (code == GAME_WIN) {
 						// Do something
+
 					}
 					else
 					{
 						// Do something
+
 					}
 				}
 				else
@@ -102,6 +106,13 @@ void CApp::Run()
 					}
 
 					m_gui->SetAlert("Co " + to_string(countchar) + " chu " + string(1, (char)ch));
+
+					m_opencount += countchar;
+					if (m_opencount == m_gui->GetAnswer().length())
+					{
+						// Win event
+
+					}
 				}
 			}
 

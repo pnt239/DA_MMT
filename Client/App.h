@@ -34,5 +34,6 @@ private:
 
 	int m_no;
 	int m_turn;
+	int m_opencount;
 };
 
