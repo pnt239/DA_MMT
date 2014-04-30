@@ -1,3 +1,22 @@
-2
-phamngocthanh
-Ai thong minh nhat ?
+10
+Cavoixanh
+Con gi to nhat the gioi?
+Vatican
+Nuoc nao nho nhat the gioi?
+SongNin
+Song nao dai nhat the gioi?
+TrungQuoc
+Nuoc nao dong dan nhat the gioi?
+LienBangNga
+Dien tich nuoc nao lon nhat the gioi?
+Italia
+Quoc gia nao giong hinh chiec ung?
+Brasil
+Doi bong da nam nao vo dich WorldCup nhieu lan nhat?
+Bungari
+Nuoc nao duoc menh danh la xu so hoa hong?
+Victoria
+Ho nao rong nhat the gioi?
+Everest
+Nui nao cao nhat the gioi?
+

@@ -44,7 +44,10 @@ void CApp::Run()
 
 		if (!error)
 			if (m_network->ReadInt() == REG_DUP)
+			{
+				m_gui->SetAlert("Nickname bi trung!");
 				error = true;
+			}
 	} while (error);
 
 	// Get number ordinal

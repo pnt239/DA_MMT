@@ -105,7 +105,7 @@ bool ReadDatabase(string filename, vector<string>& answ, vector<string>& hints)
 	}
 
 	Database >> nQues;
-	for (int i = 0; i < nQues/2; i++)
+	for (int i = 0; i < nQues; i++)
 	{
 		string ans, hint;
 		Database.ignore();
