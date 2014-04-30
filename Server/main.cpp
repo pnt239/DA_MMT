@@ -57,22 +57,19 @@ void ConnectClients(CNetwork* network, ClientInfo clients[], int nClient)
 			cout<<"Da tiep nhan client "<<i + 1<<"/"<<nClient<<"\n";
 		}
 
-		if (clients[i].NickName != "")
-			continue;
-
 		// Nhan nickname
 		string nick = network->ReadString(clients[i].Socket );
 
 		int code = REG_SUCC;
 
 		// Kiem tra co trung nickname khong
-		for (int j = i; j < nClient; j++)
+		for (int j = 0; j < nClient; j++)
 			if (nick == clients[j].NickName)
 			{
 				code = REG_DUP;
 				break;
 			}
-		
+
 		// Thong bao cho client
 		network->Send(clients[i].Socket, code);
 
@@ -80,6 +77,7 @@ void ConnectClients(CNetwork* network, ClientInfo clients[], int nClient)
 		{
 			// Neu trung
 			cout<<"Client thu "<< i <<" dang ki da dang ki trung nickname"<<endl;
+			i--;
 		}
 		else
 		{
@@ -346,6 +344,7 @@ void main()
 			}
 			else if (iNotPlay >= iConnection)
 			{
+				// Khong con ai de choi vi da het luot
 				SendAll(network, Clients, iConnection, pos);
 				SendAll(network, Clients, iConnection, turn);
 				SendAll(network, Clients, iConnection, gameevent = GAME_END);
